@@ -1,0 +1,5 @@
+package di
+
+func RegisterHook() {
+
+}
