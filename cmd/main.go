@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var fxConfig = fx.Options(fx.Invoke(di.RegisterHook))
+	var fxConfig = fx.Options(di.Provides, fx.Invoke(di.RegisterHook))
 	app := fx.New(fxConfig)
 	app.Run()
 }

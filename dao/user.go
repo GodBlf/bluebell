@@ -9,3 +9,10 @@ type User struct {
 	rclient *redis.Client
 	mclient *sqlx.DB
 }
+
+func NewUser(r *redis.Client, m *sqlx.DB) *User {
+	return &User{
+		rclient: r,
+		mclient: m,
+	}
+}
