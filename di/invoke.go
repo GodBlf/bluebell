@@ -1,5 +1,6 @@
 package di
 
-func RegisterHook() {
+import "bluebell/router"
 
+func RegisterHook(r *router.Router) {
 }

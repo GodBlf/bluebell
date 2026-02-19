@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"bluebell/initialize"
 	"bluebell/settings"
 	"context"
 	"fmt"
@@ -12,7 +11,6 @@ import (
 )
 
 func NewDB(lc fx.Lifecycle) *sqlx.DB {
-	initialize.Initialize()
 	mySQLConfig := settings.GlobalConfig.MySQLConfig
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local", mySQLConfig.User, mySQLConfig.Password, mySQLConfig.Host, mySQLConfig.Port, mySQLConfig.DB)
 	db, err := sqlx.Connect("mysql", dsn)
