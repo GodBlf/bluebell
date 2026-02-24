@@ -2,13 +2,16 @@ package main
 
 import (
 	"bluebell/di"
-	_ "bluebell/initialize"
+	"bluebell/initialize"
 
 	"go.uber.org/fx"
 )
 
 func main() {
-	var fxConfig = fx.Options(fx.Invoke(di.RegisterHook))
-	app := fx.New(fxConfig)
+	initialize.Initialize()
+	app := fx.New(
+		di.Provide,
+		fx.Invoke(di.RegisterHook),
+	)
 	app.Run()
 }

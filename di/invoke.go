@@ -1,6 +1,11 @@
 package di
 
-import "bluebell/router"
+import (
+	"bluebell/controller"
 
-func RegisterHook(r *router.Router) {
+	"github.com/gin-gonic/gin"
+)
+
+func RegisterHook(r *gin.Engine, userController *controller.UserController) {
+
 }

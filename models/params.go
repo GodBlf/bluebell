@@ -20,6 +20,11 @@ type ParamLogin struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// ParamSearchUser
+type ParamSearchUser struct {
+	Username string `json:"username" binding:"required"`
+}
+
 // ParamVoteData 投票数据
 type ParamVoteData struct {
 	// UserID 从请求中获取当前的用户

@@ -18,7 +18,7 @@ func getRootPath() string {
 	return path.Dir(file)
 }
 
-//日志
+// 日志
 type LoggerConfig struct {
 	Level        string `mapstructure:"level"`
 	Filename     string `mapstructure:"filename"`
@@ -30,15 +30,15 @@ type LoggerConfig struct {
 	LogInConsole bool   `mapstructure:"log_in_console"`
 }
 
-//appconfig singleton
+// appconfig singleton
 type AppConfig struct {
-	Name      string `mapstructure:"name"`
-	Mode      string `mapstructure:"mode"`
-	Version   string `mapstructure:"version"`
-	StartTime string `mapstructure:"start_time"`
-	MachineID int64  `mapstructure:"machine_id"`
-	Port      int    `mapstructure:"port"`
-
+	Name          string `mapstructure:"name"`
+	Mode          string `mapstructure:"mode"`
+	Version       string `mapstructure:"version"`
+	StartTime     string `mapstructure:"start_time"`
+	MachineID     int64  `mapstructure:"machine_id"`
+	Port          int    `mapstructure:"port"`
+	*AuthConfig   `mapstructure:"auth"`
 	*LoggerConfig `mapstructure:"log"`
 	*MySQLConfig  `mapstructure:"mysql"`
 	*RedisConfig  `mapstructure:"redis"`
@@ -66,7 +66,7 @@ func InitAppConfig() {
 
 }
 
-//mysql
+// mysql
 type MySQLConfig struct {
 	Host         string `mapstructure:"host"`
 	User         string `mapstructure:"user"`
@@ -84,4 +84,8 @@ type RedisConfig struct {
 	DB           int    `mapstructure:"db"`
 	PoolSize     int    `mapstructure:"pool_size"`
 	MinIdleConns int    `mapstructure:"min_idle_conns"`
+}
+
+type AuthConfig struct {
+	JwtExpire int `mapstructure:"jwt_expire"`
 }

@@ -13,7 +13,7 @@ type Snowflake struct {
 }
 
 func NewSnowflake(startTime string, machineID int64) (*Snowflake, error) {
-	parse, err := time.Parse("2006-01-02 15:04:05", startTime)
+	parse, err := time.Parse("2006-01-02", startTime)
 	if err != nil {
 		zap.L().Debug("解析时间失败", zap.String("startTime", startTime), zap.Error(err))
 		return nil, err

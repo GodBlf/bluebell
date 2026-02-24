@@ -4,6 +4,10 @@ type UserError struct {
 	name string
 }
 
+func NewUserError(name string) *UserError {
+	return &UserError{name: name}
+}
+
 func (e *UserError) Error() string {
 	return e.name
 }
@@ -16,8 +20,8 @@ func (e *UserError) Error() string {
 //)
 
 var (
-	ErrorUserExist       = &UserError{name: "用户已存在"}
-	ErrorUserNotExist    = &UserError{name: "用户不存在"}
-	ErrorInvalidPassword = &UserError{name: "用户名或密码错误"}
-	ErrorInvalidID       = &UserError{name: "无效的ID"}
+	ErrorUserExist       = NewUserError("用户已存在")
+	ErrorUserNotExist    = NewUserError("用户不存在")
+	ErrorInvalidPassword = NewUserError("用户名或密码错误")
+	ErrorInvalidID       = NewUserError("无效的ID")
 )
