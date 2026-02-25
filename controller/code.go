@@ -12,6 +12,8 @@ const (
 
 	CodeNeedLogin
 	CodeInvalidToken
+
+	CodeCommunityNotExist
 )
 
 var codeMsgMap = map[ResCode]string{

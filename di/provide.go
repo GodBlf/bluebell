@@ -12,12 +12,17 @@ import (
 // graph theory
 var ControllerModules = fx.Module("controller", fx.Provide(
 	controller.NewUserController,
+	controller.NewCommunityController,
 ))
 
 var LogicModules = fx.Module("logic", fx.Provide(
 	fx.Annotate(
 		logic.NewUserLogic,
 		fx.As(new(logic.UserLogicInterface)),
+	),
+	fx.Annotate(
+		logic.NewCommunityLogic,
+		fx.As(new(logic.CommunityLogicInterface)),
 	),
 ))
 
@@ -28,6 +33,12 @@ var DaoModules = fx.Module("dao", fx.Provide(
 		fx.As(new(dao.UserDaoInterface)),
 	),
 	dao.NewRedis,
+	fx.Annotate(
+		dao.NewCommunityDao,
+		fx.As(
+			new(dao.CommunityDaoInterface),
+		),
+	),
 ))
 
 var Provide = fx.Options(

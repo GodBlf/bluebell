@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func routerGroup(r *gin.Engine, userController *controller.UserController) {
+func routerGroup(r *gin.Engine, userController *controller.UserController, com *controller.CommunityController) {
 	r.LoadHTMLFiles("./templates/index.html")
 	r.Static("/static", "./static")
 
@@ -31,11 +31,15 @@ func routerGroup(r *gin.Engine, userController *controller.UserController) {
 	// 登录
 	v1.POST("/login", userController.LoginHandler())
 
+	//community
+	v1.GET("/community", com.CommunityHandler())
+	v1.GET("/community/:id", com.CommunityDetailHandler())
+
 }
 
-func NewRouter(lc fx.Lifecycle, userController *controller.UserController) *gin.Engine {
+func NewRouter(lc fx.Lifecycle, userController *controller.UserController, communityController *controller.CommunityController) *gin.Engine {
 	r := gin.Default()
-	routerGroup(r, userController)
+	routerGroup(r, userController, communityController)
 	addr := fmt.Sprintf(":%d", settings.GlobalConfig.Port)
 	srv := &http.Server{
 		Addr:    addr,

@@ -25,3 +25,20 @@ var (
 	ErrorInvalidPassword = NewUserError("用户名或密码错误")
 	ErrorInvalidID       = NewUserError("无效的ID")
 )
+
+type ErrorCommunity struct {
+	name string
+}
+
+func NewCommunityError(name string) *ErrorCommunity {
+	return &ErrorCommunity{name: name}
+}
+
+func (e *ErrorCommunity) Error() string {
+	return e.name
+}
+
+var (
+	ErrorCommunityNotExist  = NewCommunityError("社区不存在")
+	ErrorCommunityInvalidID = NewCommunityError("无效的社区ID")
+)
