@@ -2,12 +2,9 @@ package test
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -18,9 +15,8 @@ import (
 )
 
 const (
-	defaultBaseURL   = "http://127.0.0.1:8084"
-	testTokenSecret  = "godblf"
-	defaultStartWait = 20 * time.Second
+	defaultBaseURL  = "http://127.0.0.1:8084"
+	testTokenSecret = "godblf"
 )
 
 type testClaims struct {
@@ -46,31 +42,6 @@ type communityDetail struct {
 	Introduction string `json:"introduction"`
 }
 
-var startedCmd *exec.Cmd
-
-func TestMain(m *testing.M) {
-	baseURL := getBaseURL()
-
-	if !serverReady(baseURL) {
-		cmd, err := startProjectServer()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to start project: %v\n", err)
-			os.Exit(1)
-		}
-		startedCmd = cmd
-
-		if err := waitServerReady(baseURL, defaultStartWait); err != nil {
-			_ = stopProjectServer(startedCmd)
-			fmt.Fprintf(os.Stderr, "server not ready: %v\n", err)
-			os.Exit(1)
-		}
-	}
-
-	exitCode := m.Run()
-	_ = stopProjectServer(startedCmd)
-	os.Exit(exitCode)
-}
-
 func getBaseURL() string {
 	baseURL := os.Getenv("BLUEBELL_BASE_URL")
 	if baseURL == "" {
@@ -79,64 +50,12 @@ func getBaseURL() string {
 	return baseURL
 }
 
-func projectRootDir() string {
-	wd, err := os.Getwd()
-	if err != nil {
-		return "."
-	}
-	if fileExists(filepath.Join(wd, "go.mod")) {
-		return wd
-	}
-	parent := filepath.Dir(wd)
-	if fileExists(filepath.Join(parent, "go.mod")) {
-		return parent
-	}
-	return wd
-}
-
-func fileExists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil
-}
-
-func startProjectServer() (*exec.Cmd, error) {
-	cmd := exec.Command("go", "run", "./cmd/main.go")
-	cmd.Dir = projectRootDir()
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Start(); err != nil {
-		return nil, err
-	}
-	return cmd, nil
-}
-
-func stopProjectServer(cmd *exec.Cmd) error {
-	if cmd == nil || cmd.Process == nil {
-		return nil
-	}
-	_ = cmd.Process.Kill()
-	_, err := cmd.Process.Wait()
-	return err
-}
-
-func serverReady(baseURL string) bool {
+func requireServerReady(t *testing.T, baseURL string) {
+	t.Helper()
 	client := newRestyClient(baseURL)
 	resp, err := client.R().Get("/")
-	if err != nil {
-		return false
-	}
-	return resp.StatusCode() == http.StatusOK
-}
-
-func waitServerReady(baseURL string, timeout time.Duration) error {
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		if serverReady(baseURL) {
-			return nil
-		}
-		time.Sleep(500 * time.Millisecond)
-	}
-	return errors.New("timeout waiting for server")
+	require.NoError(t, err, "failed to access %s, please start project first", baseURL)
+	require.Equal(t, http.StatusOK, resp.StatusCode(), "project is not ready at %s", baseURL)
 }
 
 func newRestyClient(baseURL string) *resty.Client {
@@ -162,7 +81,10 @@ func mustTestToken(t *testing.T) string {
 }
 
 func TestCommunityListFront(t *testing.T) {
-	client := newRestyClient(getBaseURL())
+	baseURL := getBaseURL()
+	requireServerReady(t, baseURL)
+
+	client := newRestyClient(baseURL)
 	token := mustTestToken(t)
 
 	var result frontResponse
@@ -187,7 +109,10 @@ func TestCommunityListFront(t *testing.T) {
 }
 
 func TestCommunityDetailFront(t *testing.T) {
-	client := newRestyClient(getBaseURL())
+	baseURL := getBaseURL()
+	requireServerReady(t, baseURL)
+
+	client := newRestyClient(baseURL)
 	token := mustTestToken(t)
 
 	var listResp frontResponse
@@ -223,7 +148,10 @@ func TestCommunityDetailFront(t *testing.T) {
 }
 
 func TestCommunityDetailInvalidIDFront(t *testing.T) {
-	client := newRestyClient(getBaseURL())
+	baseURL := getBaseURL()
+	requireServerReady(t, baseURL)
+
+	client := newRestyClient(baseURL)
 	token := mustTestToken(t)
 
 	var result frontResponse
@@ -237,7 +165,10 @@ func TestCommunityDetailInvalidIDFront(t *testing.T) {
 }
 
 func TestCommunityWithoutTokenFront(t *testing.T) {
-	client := newRestyClient(getBaseURL())
+	baseURL := getBaseURL()
+	requireServerReady(t, baseURL)
+
+	client := newRestyClient(baseURL)
 	var result frontResponse
 	resp, err := client.R().
 		SetResult(&result).
